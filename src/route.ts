@@ -1,5 +1,4 @@
 import { EmptyFunction, ValueType } from "./base.ts";
-import logger from "./logger.ts";
 
 enum Methods {
   List,
@@ -111,7 +110,7 @@ class ParamModel {
       prior = this.convertor.length;
     }
     if (this.convertor[prior]) {
-      logger.warning(
+      console.log(
         `convertor of prior level ${prior} is existed, it will be override now.`
       );
     }
@@ -163,7 +162,7 @@ function Json() {
 /**
  * resolve param from body,
  * only support application/form-data
- * @param key 
+ * @param key
  */
 function File(key: string) {
   return params(Source.File, key);

@@ -15,6 +15,6 @@ export {
   Delete,
 } from "./src/route.ts";
 
-export { Controller, Pathname } from "./src/controller.ts";
+export { Controller, Restful } from "./src/controller.ts";
 
 export { Required, Default } from "./src/validator.ts";

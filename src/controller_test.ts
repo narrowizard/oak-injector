@@ -1,5 +1,5 @@
 import { assertEquals } from "../deps.ts";
-import { Controller, Pathname } from "./controller.ts";
+import { Controller, Restful } from "./controller.ts";
 import { GeneratorFromClass } from "./generator.ts";
 import {
   List,
@@ -13,7 +13,7 @@ import { Default } from "./validator.ts";
 
 const pathname = "/test";
 
-@Pathname(pathname)
+@Restful(pathname)
 class TestController extends Controller {
   @List()
   List(@Query("page") @Default("10") page: number) {}

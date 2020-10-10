@@ -14,6 +14,8 @@ function GeneratorFromClass<
   for (const key in c.__routers__) {
     const item = c.__routers__[key];
     switch (item.method) {
+      // TODO: distinct with instance.__type__
+      // only support restful controller now
       case Methods.Get:
         router.get(`${instance.__path__}/:id`, async (ctx) => {
           instance.setContext(ctx);

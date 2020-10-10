@@ -2,15 +2,24 @@ import { Application, Context, RouterContext, ServerRequest } from "../deps.ts";
 import { IMap } from "./base.ts";
 import { RouteModel } from "./route.ts";
 
+enum ControllerType {
+  Restful,
+}
+
 function NewEmptyContext() {
   const sr = new ServerRequest();
   sr.headers = new Headers();
   return new Context(new Application(), sr);
 }
 
+/**
+ * Controller is the base Controller for class based router
+ * it saves path, type and route infos.
+ */
 class Controller {
   static __routers__: IMap<RouteModel>;
   __path__: string = "";
+  __type__: ControllerType = ControllerType.Restful;
   ctx: Context<Record<string, any>> = NewEmptyContext();
 
   static getRoute(name: string) {
@@ -35,15 +44,19 @@ class Controller {
 }
 
 /**
- * define a controller path
- * @param path
+ * define a restful pathname,
+ * generated pathname is effected by method.
+ * Get,Update(HttpPut),Delete => ${path}/:id
+ * List(HttpGet),Create(HttpPost) => ${path}
+ * @param path the resource url
  */
-function Pathname(path: string) {
+function Restful(path: string) {
   return <T extends { new (...args: any[]): Controller }>(constructor: T) => {
     return class extends constructor {
       __path__ = path;
+      __type__ = ControllerType.Restful;
     };
   };
 }
 
-export { Controller, Pathname };
+export { Controller, Restful };
