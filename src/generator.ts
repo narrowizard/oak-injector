@@ -62,6 +62,9 @@ async function paramsGenerator(
 ) {
   const res = [];
   for (let p of params) {
+    if (!p.name) {
+      continue;
+    }
     let value: string | null | undefined = null;
     switch (p.source) {
       case Source.Query:
@@ -93,6 +96,14 @@ async function paramsGenerator(
       });
       if (!succ) {
         // TODO: validate failed
+      }
+    }
+    // convertor
+    if (p.convertor.length > 0) {
+      for (let i = 0; i < p.convertor.length; i++) {
+        if (p.convertor[i]) {
+          value = p.convertor[i](value);
+        }
       }
     }
     res.push(value);

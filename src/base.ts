@@ -3,3 +3,5 @@ export interface IMap<V> {
 }
 
 export const EmptyFunction = () => {};
+
+export type ValueType = string | undefined | null;

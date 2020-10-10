@@ -34,4 +34,16 @@ class Controller {
   }
 }
 
-export { Controller };
+/**
+ * define a controller path
+ * @param path
+ */
+function Pathname(path: string) {
+  return <T extends { new (...args: any[]): Controller }>(constructor: T) => {
+    return class extends constructor {
+      __path__ = path;
+    };
+  };
+}
+
+export { Controller, Pathname };

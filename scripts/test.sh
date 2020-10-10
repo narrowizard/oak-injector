@@ -1,0 +1,1 @@
+deno test -c ./tsconfig.json --allow-write

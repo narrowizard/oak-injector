@@ -1,4 +1,5 @@
-import { EmptyFunction } from "./base.ts";
+import { EmptyFunction, ValueType } from "./base.ts";
+import logger from "./logger.ts";
 
 enum Methods {
   List,
@@ -28,11 +29,51 @@ class RouteModel {
   }
 }
 
+// methods
+
+function List() {
+  return route(Methods.List);
+}
+
+function Get() {
+  return route(Methods.Get);
+}
+
+function Create() {
+  return route(Methods.Create);
+}
+
+function Update() {
+  return route(Methods.Update);
+}
+
+function Delete() {
+  return route(Methods.Delete);
+}
+
+function route(m: Methods) {
+  return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    const route: RouteModel = target.constructor.getRoute(propertyKey);
+    route.method = m;
+    route.value = descriptor.value;
+    target.constructor.setRoute(propertyKey, route);
+  };
+}
+
+/**
+ * ParamModel represent a injectable param.
+ * inject progress:
+ * 1. get value from source
+ * 2. validate value
+ * 3. convert value
+ * 4. invoke request handler with converted value
+ */
 class ParamModel {
-  public source: Source = Source.Query;
-  public name: string = "";
-  public defaultVal: string = "";
-  public validator: ((value: string | undefined | null) => boolean)[] = [];
+  public source?: Source;
+  public name?: string;
+  public defaultVal?: string;
+  public validator: ((value: ValueType) => boolean)[] = [];
+  public convertor: ((value: ValueType) => ValueType)[] = [];
 
   /**
    * CombineParamModel combine two param model,
@@ -52,10 +93,29 @@ class ParamModel {
     }
   }
 
-  public AddValidator(
-    validator: (value: string | undefined | null) => boolean
-  ) {
+  public AddValidator(validator: (value: ValueType) => boolean) {
     this.validator.push(validator);
+  }
+
+  /**
+   * add a convertor to a parameter, convertors will be invoked order by prior,
+   * don't use a large prior, since convertors is simplly stored in an array.
+   * @param convertor convert value to value
+   * @param prior if not provide, prior will be convertors' length.
+   */
+  public AddConvertor(
+    convertor: (value: ValueType) => ValueType,
+    prior?: number
+  ) {
+    if (!prior) {
+      prior = this.convertor.length;
+    }
+    if (this.convertor[prior]) {
+      logger.warning(
+        `convertor of prior level ${prior} is existed, it will be override now.`
+      );
+    }
+    this.convertor[prior] = convertor;
   }
 }
 
@@ -88,16 +148,6 @@ function params(source: Source, key: string) {
   };
 }
 
-function Required() {
-  return (target: any, propertyKey: string, paramIndex: number) => {
-    const route: RouteModel = target.constructor.getRoute(propertyKey);
-    const pm = new ParamModel();
-    pm.AddValidator((value) => !!value);
-    route.AddParamDefinition(paramIndex, pm);
-    target.constructor.setRoute(propertyKey, route);
-  };
-}
-
 export {
   ParamModel,
   Source,
@@ -107,5 +157,9 @@ export {
   Header,
   Methods,
   RouteModel,
-  Required,
+  List,
+  Get,
+  Create,
+  Update,
+  Delete,
 };
