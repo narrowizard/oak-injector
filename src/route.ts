@@ -156,7 +156,7 @@ function Header(key: string) {
  * only support content-type application/json
  */
 function Json() {
-  return params(Source.Json, "");
+  return params(Source.Json, "json");
 }
 
 /**
@@ -174,7 +174,7 @@ function File(key: string) {
  * it depends request's content-type.
  */
 function Auto() {
-  return params(Source.Auto, "");
+  return params(Source.Auto, "auto");
 }
 
 function params(source: Source, key: string) {
