@@ -41,7 +41,7 @@ function GeneratorFromClass<
         });
         break;
       case Methods.Update:
-        router.put(instance.__path__, async (ctx) => {
+        router.put(`${instance.__path__}/:id`, async (ctx) => {
           instance.setContext(ctx);
           const params = await paramsGenerator(ctx, item.params);
           const data = await item.value.call(instance, ...params);
@@ -49,7 +49,7 @@ function GeneratorFromClass<
         });
         break;
       case Methods.Delete:
-        router.delete(instance.__path__, async (ctx) => {
+        router.delete(`${instance.__path__}/:id`, async (ctx) => {
           instance.setContext(ctx);
           const params = await paramsGenerator(ctx, item.params);
           const data = await item.value.call(instance, ...params);
