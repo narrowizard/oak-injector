@@ -15,7 +15,7 @@ enum Source {
   Header,
   Form,
   File,
-  Body,
+  Json,
   Auto,
 }
 
@@ -119,23 +119,64 @@ class ParamModel {
   }
 }
 
+/**
+ * resolve param from request url query string
+ * @param key
+ */
 function Query(key: string) {
   return params(Source.Query, key);
 }
 
+/**
+ * resolve param from request url path
+ * @param key
+ */
 function Path(key: string) {
   return params(Source.Path, key);
 }
 
+/**
+ * resolve param from request body,
+ * content-type should be application/x-www-form-urlencoded
+ * @param key
+ */
 function Form(key: string) {
   return params(Source.Form, key);
 }
 
+/**
+ * resolve param from request header
+ * @param key
+ */
 function Header(key: string) {
   return params(Source.Header, key);
 }
 
-function Auto(key: string) {}
+/**
+ * resolve param from body,
+ * only support content-type application/json
+ */
+function Json() {
+  return params(Source.Json, "");
+}
+
+/**
+ * resolve param from body,
+ * only support application/form-data
+ * @param key 
+ */
+function File(key: string) {
+  return params(Source.File, key);
+}
+
+/**
+ * resolve param from request body, path and query string,
+ * target should be an object,
+ * it depends request's content-type.
+ */
+function Auto() {
+  return params(Source.Auto, "");
+}
 
 function params(source: Source, key: string) {
   return (target: any, propertyKey: string, paramIndex: number) => {
@@ -155,6 +196,9 @@ export {
   Path,
   Form,
   Header,
+  Json,
+  File,
+  Auto,
   Methods,
   RouteModel,
   List,

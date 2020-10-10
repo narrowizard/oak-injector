@@ -1,5 +1,6 @@
+import { FormDataBody } from "https://deno.land/x/oak@v6.2.0/multipart.ts";
 import { Router, RouterContext } from "../deps.ts";
-import { IMap } from "./base.ts";
+import { IMap, ValueType } from "./base.ts";
 import { Controller } from "./controller.ts";
 import { Methods, RouteModel, ParamModel, Source } from "./route.ts";
 
@@ -60,12 +61,16 @@ async function paramsGenerator(
   >,
   params: ParamModel[]
 ) {
+  // if body is read
+  let readed = false;
   const res = [];
+  const body = ctx.request.body();
+  let formData: FormDataBody = { fields: {} };
   for (let p of params) {
     if (!p.name) {
       continue;
     }
-    let value: string | null | undefined = null;
+    let value: ValueType = null;
     switch (p.source) {
       case Source.Query:
         value = ctx.request.url.searchParams.get(p.name);
@@ -77,10 +82,78 @@ async function paramsGenerator(
         value = ctx.params[p.name];
         break;
       case Source.Form:
-        const b = ctx.request.body({ type: "form" });
-        value = (await b.value).get(p.name);
+        if (body.type === "form") {
+          value = (await body.value).get(p.name);
+        } else if (body.type === "form-data") {
+          if (!readed) {
+            formData = await body.value.read();
+            readed = true;
+          }
+          value = formData.fields[p.name];
+        }
         break;
-      // TODO: body, file
+      case Source.Auto:
+        if (!value) {
+          value = {};
+        }
+        // body
+        if (body.type === "json") {
+          const json: IMap<string> = await body.value;
+          value = json;
+        } else if (body.type === "form") {
+          const form = (await body.value).entries();
+          for (const [k, v] of form) {
+            value[k] = v;
+          }
+        } else if (body.type === "form-data") {
+          if (!readed) {
+            formData = await body.value.read();
+            readed = true;
+          }
+          for (const k in formData.fields) {
+            if (formData.fields[k]) {
+              value[k] = formData.fields[k];
+            }
+          }
+          if (formData.files) {
+            for (let i = 0; i < formData.files?.length; i++) {
+              value[formData.files[i].name] = formData.files[i];
+            }
+          }
+        }
+        // query
+        const query = ctx.request.url.searchParams.entries();
+        for (const [k, v] of query) {
+          value[k] = v;
+        }
+        // path
+        for (const k in ctx.params) {
+          const temp = ctx.params[k];
+          if (temp) {
+            value[k] = temp;
+          }
+        }
+        break;
+      case Source.Json:
+        if (body.type === "json") {
+          value = await body.value;
+        }
+        break;
+      case Source.File:
+        if (body.type === "form-data") {
+          if (!readed) {
+            formData = await body.value.read();
+            readed = true;
+          }
+          if (formData.files) {
+            for (let i = 0; i < formData.files?.length; i++) {
+              if (formData.files[i].name === p.name) {
+                value = formData.files[i];
+              }
+            }
+          }
+        }
+        break;
     }
     // default
     if (value === null && p.defaultVal !== undefined) {
