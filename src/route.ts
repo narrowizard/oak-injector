@@ -71,7 +71,7 @@ class ParamModel {
   public source?: Source;
   public name?: string;
   public defaultVal?: string;
-  public validator: ((value: ValueType) => boolean)[] = [];
+  public validator: ((value: ValueType) => boolean | string)[] = [];
   public convertor: ((value: ValueType) => ValueType)[] = [];
 
   /**
@@ -92,7 +92,7 @@ class ParamModel {
     }
   }
 
-  public AddValidator(validator: (value: ValueType) => boolean) {
+  public AddValidator(validator: (value: ValueType) => boolean | string) {
     this.validator.push(validator);
   }
 

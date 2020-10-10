@@ -59,4 +59,4 @@ function Restful(path: string) {
   };
 }
 
-export { Controller, Restful };
+export { ControllerType, Controller, Restful };
