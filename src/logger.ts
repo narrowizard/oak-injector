@@ -1,6 +1,4 @@
-import * as log from "https://deno.land/std/log/mod.ts";
-import { format } from "https://deno.land/std/datetime/mod.ts";
-import { LogRecord } from "https://deno.land/std@0.71.0/log/logger.ts";
+import { format, log, LogRecord } from "../deps.ts";
 
 const loggerFormatter = (record: LogRecord) => {
   const e = new Error().stack;

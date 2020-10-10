@@ -1,3 +1,4 @@
+import { assertEquals } from "../deps.ts";
 import { Controller, Pathname } from "./controller.ts";
 import { GeneratorFromClass } from "./generator.ts";
 import {
@@ -9,7 +10,6 @@ import {
   Source,
 } from "./route.ts";
 import { Default } from "./validator.ts";
-import { assertEquals } from "https://deno.land/std@0.69.0/testing/asserts.ts";
 
 const pathname = "/test";
 
