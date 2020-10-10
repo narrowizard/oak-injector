@@ -20,35 +20,40 @@ function GeneratorFromClass<
         router.get(`${instance.__path__}/:id`, async (ctx) => {
           instance.setContext(ctx);
           const params = await paramsGenerator(ctx, item.params);
-          await item.value.call(instance, ...params);
+          const data = await item.value.call(instance, ...params);
+          ctx.response.body = data;
         });
         break;
       case Methods.List:
         router.get(instance.__path__, async (ctx) => {
           instance.setContext(ctx);
           const params = await paramsGenerator(ctx, item.params);
-          await item.value.call(instance, ...params);
+          const data = await item.value.call(instance, ...params);
+          ctx.response.body = data;
         });
         break;
       case Methods.Create:
         router.post(instance.__path__, async (ctx) => {
           instance.setContext(ctx);
           const params = await paramsGenerator(ctx, item.params);
-          await item.value.call(instance, ...params);
+          const data = await item.value.call(instance, ...params);
+          ctx.response.body = data;
         });
         break;
       case Methods.Update:
         router.put(instance.__path__, async (ctx) => {
           instance.setContext(ctx);
           const params = await paramsGenerator(ctx, item.params);
-          await item.value.call(instance, ...params);
+          const data = await item.value.call(instance, ...params);
+          ctx.response.body = data;
         });
         break;
       case Methods.Delete:
         router.delete(instance.__path__, async (ctx) => {
           instance.setContext(ctx);
           const params = await paramsGenerator(ctx, item.params);
-          await item.value.call(instance, ...params);
+          const data = await item.value.call(instance, ...params);
+          ctx.response.body = data;
         });
         break;
     }
