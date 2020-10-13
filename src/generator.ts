@@ -5,42 +5,44 @@ import { IMap, ValueType } from "./base.ts";
 import { Controller, ControllerType } from "./controller.ts";
 import { Methods, RouteModel, ParamModel, Source } from "./route.ts";
 
-function GeneratorFromClass<
+function GeneratorFromClasses<
   T extends { new (...args: any[]): Controller } & {
     __routers__: IMap<RouteModel>;
   }
->(c: T): Router {
+>(classes: T[]): Router {
   const router = new Router();
-  const instance = new c();
-  if (instance.__type__ === ControllerType.Restful) {
-    // restful controller now
-    for (const key in c.__routers__) {
-      const item = c.__routers__[key];
-      switch (item.method) {
-        case Methods.Get:
-          router.get(
-            `${instance.__path__}/:id`,
-            reqHandlerFactory(instance, item)
-          );
-          break;
-        case Methods.List:
-          router.get(instance.__path__, reqHandlerFactory(instance, item));
-          break;
-        case Methods.Create:
-          router.post(instance.__path__, reqHandlerFactory(instance, item));
-          break;
-        case Methods.Update:
-          router.put(
-            `${instance.__path__}/:id`,
-            reqHandlerFactory(instance, item)
-          );
-          break;
-        case Methods.Delete:
-          router.delete(
-            `${instance.__path__}/:id`,
-            reqHandlerFactory(instance, item)
-          );
-          break;
+  for (const c of classes) {
+    const instance = new c();
+    if (instance.__type__ === ControllerType.Restful) {
+      // restful controller now
+      for (const key in c.__routers__) {
+        const item = c.__routers__[key];
+        switch (item.method) {
+          case Methods.Get:
+            router.get(
+              `${instance.__path__}/:id`,
+              reqHandlerFactory(instance, item)
+            );
+            break;
+          case Methods.List:
+            router.get(instance.__path__, reqHandlerFactory(instance, item));
+            break;
+          case Methods.Create:
+            router.post(instance.__path__, reqHandlerFactory(instance, item));
+            break;
+          case Methods.Update:
+            router.put(
+              `${instance.__path__}/:id`,
+              reqHandlerFactory(instance, item)
+            );
+            break;
+          case Methods.Delete:
+            router.delete(
+              `${instance.__path__}/:id`,
+              reqHandlerFactory(instance, item)
+            );
+            break;
+        }
       }
     }
   }
@@ -197,4 +199,4 @@ async function paramsGenerator(
   return { Succ: true, Params: res };
 }
 
-export { GeneratorFromClass };
+export { GeneratorFromClasses };

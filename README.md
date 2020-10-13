@@ -4,7 +4,7 @@ dependency injector support for deno oak framework.
 ## usage
 ```ts
 import { Application } from "https://deno.land/x/oak/mod.ts";
-import { GeneratorFromClass, Restful, List, Query, Default, Controller } from "https://deno.land/x/oak_injector/mod.ts";
+import { GeneratorFromClasses, Restful, List, Query, Default, Controller } from "https://deno.land/x/oak_injector/mod.ts";
 
 const app = new Application();
 // ...
@@ -19,7 +19,7 @@ class TestController extends Controller {
   }
 }
 // ...
-app.use(GeneratorFromClass(TestController).routes());
+app.use(GeneratorFromClasses([TestController]).routes());
 await app.listen({ port: 80 });
 
 ```

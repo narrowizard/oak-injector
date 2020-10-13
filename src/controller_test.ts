@@ -1,6 +1,6 @@
 import { assertEquals } from "../deps.ts";
 import { Controller, Restful } from "./controller.ts";
-import { GeneratorFromClass } from "./generator.ts";
+import { GeneratorFromClasses } from "./generator.ts";
 import {
   List,
   Methods,
@@ -19,7 +19,7 @@ class TestController extends Controller {
   List(@Query("page") @Default("10") page: number) {}
 }
 
-GeneratorFromClass(TestController);
+GeneratorFromClasses([TestController]);
 
 Deno.test("pathname", () => {
   const tc = new TestController();
