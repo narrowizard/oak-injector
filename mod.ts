@@ -1,4 +1,4 @@
-export { GeneratorFromClass } from "./src/generator.ts";
+export { GeneratorFromClasses } from "./src/generator.ts";
 
 export {
   Query,
